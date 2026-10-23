@@ -123,6 +123,26 @@ With this binding, `. Space shift_guard a` produces `. A`: the redundant shift
 tap emits nothing while sentence capitalization is pending. Outside that state,
 `shift_guard a` behaves like ordinary sticky Shift and produces `A`.
 
+#### Shift pressed after `. Space`
+
+Sentence capitalization does not invert or cancel a manually applied Shift.
+The result depends on which behavior your Shift key uses:
+
+| Keys typed after `. Space` | Text produced | What happens |
+| --- | --- | --- |
+| Tap `shift_guard`, type `a b` | `. Ab` | The guarded one-shot Shift tap is ignored; sentence case capitalizes `a` only. |
+| Tap `shift_guard` twice, type `a b` | `. Ab` | Both redundant taps are ignored while sentence case is pending. |
+| Hold ordinary Shift, type `a b`, release Shift | `. AB` | The Shift press consumes sentence case; held Shift capitalizes both letters normally. |
+| Tap an unguarded one-shot Shift, type `a b` | `. Ab` | With the standard non-lazy `&sk LSHFT`, its Shift press consumes sentence case; the manual one-shot capitalizes `a`. |
+| Press and release ordinary Shift, then type `a b` | `. ab` | The Shift press consumes sentence case, and no Shift remains held for either letter. |
+
+Here, ordinary Shift is `&kp LSHFT`, an unguarded one-shot is `&sk LSHFT`, and
+`shift_guard` is the sentence-morph binding shown above. Use `&shift_guard` if
+you want a redundant one-shot Shift tap to leave sentence capitalization armed.
+This guarding is opt-in: the module does not automatically intercept every
+Shift binding in your keymap. Examples assume the letters are typed before the
+relevant sentence-case or manual one-shot timeout.
+
 For dead-key accent macros, select a shifted-accent binding with
 another sentence morph. That binding must leave the dead key unshifted and
 shift the vowel; a stock lazy sticky shift would otherwise modify the dead key.
