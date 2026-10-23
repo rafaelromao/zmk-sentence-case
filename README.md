@@ -35,7 +35,7 @@ consume it without an added shift. Releases and layer-only behaviors do not
 consume it. Another space consumes it without rearming. It expires after
 `release-after-ms`; there is no held modifier to release on timeout.
 
-Punctuation matching uses the previous behavior's strict modifier semantics:
+Punctuation matching uses strict modifier semantics:
 plain dot or Left-Shift question/exclamation, without extra modifiers. Shift+dot
 (`>`) and shortcuts are not sentence terminators. The shift is attached to the
 letter's keycode event as `LS(A)`, not `A`.
@@ -53,7 +53,7 @@ position (and split source). `CONFIG_ZMK_BEHAVIOR_SENTENCE_MORPH_MAX_HELD`
 sets the per-instance capacity (default 8). If capacity is exhausted, only that
 new press is rejected; releasing it cannot release another position's binding.
 
-For example, ignore a redundant sticky-shift tap without losing a Media hold:
+For example, ignore a redundant sticky-shift tap:
 
 ```dts
 shift_guard: shift_guard {
@@ -63,12 +63,10 @@ shift_guard: shift_guard {
 };
 ```
 
-Use `&shift_guard` as the tap behavior of the normal shift/Media hold-tap.
-For dead-key accent macros, select the existing shifted-accent binding with
+Use `&shift_guard` directly or as the tap behavior of a hold-tap.
+For dead-key accent macros, select a shifted-accent binding with
 another sentence morph. That binding must leave the dead key unshifted and
 shift the vowel; a stock lazy sticky shift would otherwise modify the dead key.
-An example integration is in
-[rafaelromao/keyboards](https://github.com/rafaelromao/keyboards/blob/feat/zmk-sentence-case-behavior/zmk/features/sentence.dtsi).
 
 ## Tests
 
@@ -82,5 +80,10 @@ python3 /path/to/zmk-sentence-case/tests/run.py \
   --build-dir /path/to/sentence-tests
 ```
 
-Build and event logs are saved under the build directory. Full-keymap integration
-tests live in the consuming [keyboards repository](https://github.com/rafaelromao/keyboards).
+Build and event logs are saved under the build directory. The test fixture is
+self-contained and requires only ZMK and this module.
+
+## Reference implementation
+
+For an example of using these behaviors in a complete keyboard configuration,
+see [rafaelromao/keyboards](https://github.com/rafaelromao/keyboards).

@@ -120,34 +120,18 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--zmk-app", type=Path, required=True)
     parser.add_argument("--build-dir", type=Path, required=True)
-    parser.add_argument("--adaptive-module", type=Path)
-    parser.add_argument("--auto-layer-module", type=Path)
     args = parser.parse_args()
     app, build = args.zmk_app.resolve(), args.build_dir.resolve()
     config = build / "config"
     config.mkdir(parents=True, exist_ok=True)
     cases = list(scenarios())
     modules = [str(MODULE)]
-    defines = ""
-    if args.adaptive_module:
-        modules.append(str(args.adaptive_module.resolve()))
-        defines += "#define SENTENCE_TEST_ADAPTIVE\n"
-        cases.extend([
-            ("adaptive remembers capital", prefix + tap(A) + tap(K), prefix_output + [capital_a, key(0x0B)]),
-            ("adaptive strict modifiers", tap(A) + tap(K), [a, key(0x1D)]),
-        ])
-    if args.auto_layer_module:
-        modules.append(str(args.auto_layer_module.resolve()))
-        defines += "#define SENTENCE_TEST_AUTO_LAYER\n"
-        cases.extend([
-            ("num word consumes without shift", prefix + tap(RAW_SHIFT) + tap(A) + tap(B) + tap(A), prefix_output + [key(0x1E), b, a]),
-        ])
     events = []
     for _, sequence, _ in cases:
         events.extend(tap(MARKER) + sequence)
     scan = "\n".join(f"ZMK_MOCK_{'PRESS' if state else 'RELEASE'}(0,{position},{delay})" for position, state, delay in events)
     (config / "native_sim.keymap").write_text(
-        defines + f'#include "{MODULE / "tests/behaviors.dtsi"}"\n'
+        f'#include "{MODULE / "tests/behaviors.dtsi"}"\n'
         f'&kscan {{ rows = <1>; columns = <34>; events = <{scan}>; }};\n'
     )
     (config / "native_sim.conf").write_text("CONFIG_ZMK_BEHAVIOR_SENTENCE_MORPH_MAX_HELD=2\n")
