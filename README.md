@@ -7,8 +7,7 @@ Repository: https://github.com/rafaelromao/zmk-sentence-case
 
 ## Usage
 
-Add this directory to `ZMK_EXTRA_MODULES`, **before adaptive-key and other
-keycode observers**, then include:
+Add this directory to `ZMK_EXTRA_MODULES`, then include:
 
 ```dts
 #include <behaviors.dtsi>
@@ -39,7 +38,7 @@ consume it. Another space consumes it without rearming. It expires after
 Punctuation matching uses the previous behavior's strict modifier semantics:
 plain dot or Left-Shift question/exclamation, without extra modifiers. Shift+dot
 (`>`) and shortcuts are not sentence terminators. The shift is attached to the
-letter's keycode event, so adaptive keys and repeat remember `LS(A)`, not `A`.
+letter's keycode event as `LS(A)`, not `A`.
 Only the first character of a macro is affected.
 
 ### Sticky shift and accents
@@ -83,7 +82,5 @@ python3 /path/to/zmk-sentence-case/tests/run.py \
   --build-dir /path/to/sentence-tests
 ```
 
-Optional `--adaptive-module /path/to/zmk-adaptive-key` and
-`--auto-layer-module /path/to/zmk-auto-layer` enable integration scenarios.
 Build and event logs are saved under the build directory. Full-keymap integration
 tests live in the consuming [keyboards repository](https://github.com/rafaelromao/keyboards).
