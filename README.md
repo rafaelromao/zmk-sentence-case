@@ -19,13 +19,68 @@ macros or the tap binding of a hold-tap. Other `&kp SPACE` bindings remain plain
 spaces. For example:
 
 ```dts
-bindings = <&kp A &sentence_space &kp B>;
-
 &sentence_space {
     prior-idle-ms = <2000>;
     release-after-ms = <1000>;
 };
 ```
+
+### Bind it to your space key
+
+In your existing keymap, replace the space binding:
+
+```diff
+- &kp SPACE
++ &sentence_space
+```
+
+For example, this illustrative six-key layer can type `a. B` without manually
+pressing Shift:
+
+```dts
+/ {
+    keymap {
+        compatible = "zmk,keymap";
+        default_layer {
+            bindings = <&kp A &kp B &kp DOT &kp QMARK &kp EXCL &sentence_space>;
+        };
+    };
+};
+```
+
+Keep your keyboard's existing number and order of bindings; the six-key layer
+above only illustrates where the behavior goes. Keep `&kp SPACE` on any keys
+where you do not want automatic capitalization.
+
+### What typing looks like
+
+Here, `Space` means the key bound to `&sentence_space`. Examples assume normal
+host capitalization settings, no held modifiers, and the default timeouts.
+
+| Keys typed | Text produced | Why |
+| --- | --- | --- |
+| `a . Space b a` | `a. Ba` | Only the first letter after the sentence boundary is capitalized. |
+| `a ? Space b` | `a? B` | Question marks also arm capitalization. |
+| `a ! Space b` | `a! B` | Exclamation marks do too. |
+| `a Space b` | `a b` | An ordinary word boundary does not arm it. |
+| `a . b` | `a.b` | Punctuation alone is not enough; sentence-aware space is required. |
+| `. Space 1 a` | `. 1a` | A number consumes the one-shot without becoming a symbol. |
+| `. Space Space a` | `.  a` | The extra space consumes the one-shot; `a` stays lowercase. |
+| `. Space , a` | `. ,a` | A non-letter consumes it without adding Shift. |
+| `.`, wait 3 seconds, `Space a` | `. a` | The punctuation is older than `prior-idle-ms`. |
+| `. Space`, wait 2 seconds, `a` | `. a` | The one-shot has exceeded `release-after-ms`. |
+
+For `. Space b a`, the sequence is:
+
+1. `.` becomes the most recently emitted key press.
+2. `Space` emits a normal space and arms capitalization. No Shift is held yet.
+3. `b` consumes the one-shot and is emitted with Left Shift, producing `B`.
+4. `a` is emitted normally, producing `a`.
+
+Opening a layer alone does not consume the one-shot: `. Space`, hold your number
+layer, then press `1`, produces `. 1`. The digit consumes it, so a subsequent
+letter is not automatically capitalized. Backspace or an arrow key also consumes
+it; the behavior tracks emitted key presses, not the text or cursor in your editor.
 
 Space presses and releases behave like `&kp SPACE`. If the latest key press was
 `.`, `!`, or `?` within `prior-idle-ms`, the space press arms a lazy, one-shot
@@ -64,6 +119,10 @@ shift_guard: shift_guard {
 ```
 
 Use `&shift_guard` directly or as the tap behavior of a hold-tap.
+With this binding, `. Space shift_guard a` produces `. A`: the redundant shift
+tap emits nothing while sentence capitalization is pending. Outside that state,
+`shift_guard a` behaves like ordinary sticky Shift and produces `A`.
+
 For dead-key accent macros, select a shifted-accent binding with
 another sentence morph. That binding must leave the dead key unshifted and
 shift the vowel; a stock lazy sticky shift would otherwise modify the dead key.
