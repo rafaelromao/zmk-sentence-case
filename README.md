@@ -2,8 +2,9 @@
 
 A standalone Zephyr/ZMK module providing `&sentence_space`, a replacement for
 `&kp SPACE`. It has no dependency on this repository's keymap, layers, adaptive
-keys, or auto-layer module. It is kept here as source rather than a remote
-submodule so fresh builds do not depend on an unpublished repository.
+keys, or auto-layer module.
+
+Repository: https://github.com/rafaelromao/zmk-sentence-case
 
 ## Usage
 
@@ -68,7 +69,8 @@ Use `&shift_guard` as the tap behavior of the normal shift/Media hold-tap.
 For dead-key accent macros, select the existing shifted-accent binding with
 another sentence morph. That binding must leave the dead key unshifted and
 shift the vowel; a stock lazy sticky shift would otherwise modify the dead key.
-The keymap's integration is in `zmk/features/sentence.dtsi`.
+An example integration is in
+[rafaelromao/keyboards](https://github.com/rafaelromao/keyboards/blob/feat/zmk-sentence-case-behavior/zmk/features/sentence.dtsi).
 
 ## Tests
 
@@ -84,5 +86,5 @@ python3 /path/to/zmk-sentence-case/tests/run.py \
 
 Optional `--adaptive-module /path/to/zmk-adaptive-key` and
 `--auto-layer-module /path/to/zmk-auto-layer` enable integration scenarios.
-Build and event logs are saved under the build directory. Repository-level
-keymap wiring tests run with `python3 -m unittest discover -s zmk/tests`.
+Build and event logs are saved under the build directory. Full-keymap integration
+tests live in the consuming [keyboards repository](https://github.com/rafaelromao/keyboards).
