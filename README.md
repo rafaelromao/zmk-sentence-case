@@ -1,8 +1,7 @@
 # ZMK Sentence Case
 
 A standalone Zephyr/ZMK module providing `&sentence_space`, a replacement for
-`&kp SPACE`. It has no dependency on this repository's keymap, layers, adaptive
-keys, or auto-layer module.
+`&kp SPACE`.
 
 Repository: https://github.com/rafaelromao/zmk-sentence-case
 
